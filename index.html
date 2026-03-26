@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>PSA利益計算アプリ</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px 14px 40px;
+    }
+    .title {
+      text-align: center;
+      margin: 10px 0 16px;
+    }
+    .title h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .title p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+      margin-bottom: 14px;
+      border: 1px solid #e2e8f0;
+    }
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+    }
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+    .grid.two {
+      grid-template-columns: 1fr 1fr;
+    }
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .field input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 0 14px;
+      font-size: 18px;
+      outline: none;
+      background: #fff;
+    }
+    .field input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+    .yellow { background: #fef9c3 !important; }
+    .blue { background: #e0f2fe !important; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+    .row:last-child { margin-bottom: 0; }
+    .name {
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .sub {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .badge {
+      white-space: nowrap;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .plus {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .minus {
+      background: #ffe4e6;
+      color: #be123c;
+    }
+    .result-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+    }
+    .result-label {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .result-value {
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .note {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .sticky-save {
+      font-size: 12px;
+      color: #0f766e;
+      margin-top: 6px;
+    }
+    @media (max-width: 560px) {
+      .grid.two { grid-template-columns: 1fr; }
+      .title h1 { font-size: 24px; }
+      .result-value { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">
+      <h1>PSA利益計算アプリ</h1>
+      <p>仕入価格・PSA10・PSA9・素体価格を入れると利益を自動計算します。<br>小数点以下は切り捨てです。</p>
+    </div>
+
+    <div class="card">
+      <h2>ドル → 円 計算</h2>
+      <div class="grid two">
+        <div class="field">
+          <label for="d1">D1 ドル</label>
+          <input id="d1" class="yellow" inputmode="decimal" placeholder="例: 100" />
+        </div>
+        <div class="field">
+          <label for="f1">F1 レート</label>
+          <input id="f1" class="yellow" inputmode="decimal" placeholder="例: 155" />
+          <div class="sticky-save">F1だけ次回も保存されます</div>
+        </div>
+      </div>
+      <div class="result-box" style="margin-top: 12px;">
+        <div class="result-label">D2 円（D1 × F1）</div>
+        <div id="d2" class="result-value">0円</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>入力</h2>
+      <div class="grid two">
+        <div class="field">
+          <label for="purchase">B1 仕入価格</label>
+          <input id="purchase" class="yellow" inputmode="numeric" placeholder="例: 5000" />
+        </div>
+        <div></div>
+        <div class="field">
+          <label for="psa10">B4 PSA10価格</label>
+          <input id="psa10" class="blue" inputmode="numeric" placeholder="例: 25000" />
+        </div>
+        <div class="field">
+          <label for="psa9">C4 PSA9価格</label>
+          <input id="psa9" class="blue" inputmode="numeric" placeholder="例: 18000" />
+        </div>
+        <div class="field">
+          <label for="raw">D4 素体価格</label>
+          <input id="raw" class="blue" inputmode="numeric" placeholder="例: 12000" />
+        </div>
+      </div>
+      <div class="note">F1以外の入力値は保存されません。ページを閉じると消えます。</div>
+    </div>
+
+    <div class="card">
+      <h2>PSA10 利益</h2>
+      <div id="psa10Results"></div>
+    </div>
+
+    <div class="card">
+      <h2>PSA9 利益</h2>
+      <div id="psa9Results"></div>
+    </div>
+
+    <div class="card">
+      <h2>素体 利益</h2>
+      <div class="row">
+        <div>
+          <div class="name">素体売却</div>
+          <div class="sub">D5 = D4 × 0.9 − 225 − B1</div>
+        </div>
+        <div id="rawResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const plans = [
+      { label: "レギュラー", fee: 11980, days: 42 },
+      { label: "バリューマックス", fee: 8980, days: 56 },
+      { label: "バリュープラス", fee: 7980, days: 84 },
+      { label: "バリュー", fee: 4980, days: 126 }
+    ];
+
+    const d1 = document.getElementById('d1');
+    const f1 = document.getElementById('f1');
+    const d2 = document.getElementById('d2');
+    const purchase = document.getElementById('purchase');
+    const psa10 = document.getElementById('psa10');
+    const psa9 = document.getElementById('psa9');
+    const raw = document.getElementById('raw');
+    const psa10Results = document.getElementById('psa10Results');
+    const psa9Results = document.getElementById('psa9Results');
+    const rawResult = document.getElementById('rawResult');
+
+    const savedF1 = localStorage.getItem('psa_f1_rate');
+    if (savedF1 !== null) f1.value = savedF1;
+
+    function toNumber(value) {
+      if (!value) return 0;
+      const num = Number(String(value).replace(/,/g, '').trim());
+      return Number.isFinite(num) ? num : 0;
+    }
+
+    function yen(value) {
+      return Number(value).toLocaleString('ja-JP') + '円';
+    }
+
+    function badge(value) {
+      const cls = value >= 0 ? 'badge plus' : 'badge minus';
+      const sign = value >= 0 ? '+' : '';
+      return `<div class="${cls}">${sign}${yen(value)}</div>`;
+    }
+
+    function calcProfit(sellPrice, purchasePrice, fee) {
+      return Math.floor(sellPrice * 0.9 - 225 - purchasePrice - fee);
+    }
+
+    function calcRaw(rawPrice, purchasePrice) {
+      return Math.floor(rawPrice * 0.9 - 225 - purchasePrice);
+    }
+
+    function renderRows(target, sellPrice, purchasePrice) {
+      target.innerHTML = plans.map(plan => {
+        const profit = calcProfit(sellPrice, purchasePrice, plan.fee);
+        return `
+          <div class="row">
+            <div>
+              <div class="name">${plan.label}</div>
+              <div class="sub">${plan.fee.toLocaleString('ja-JP')}円 / ${plan.days}日</div>
+            </div>
+            ${badge(profit)}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function render() {
+      const purchaseNum = toNumber(purchase.value);
+      const psa10Num = toNumber(psa10.value);
+      const psa9Num = toNumber(psa9.value);
+      const rawNum = toNumber(raw.value);
+      const d1Num = toNumber(d1.value);
+      const f1Num = toNumber(f1.value);
+
+      const d2Num = Math.floor(d1Num * f1Num);
+      d2.textContent = yen(d2Num);
+
+      renderRows(psa10Results, psa10Num, purchaseNum);
+      renderRows(psa9Results, psa9Num, purchaseNum);
+      rawResult.innerHTML = badge(calcRaw(rawNum, purchaseNum));
+
+      localStorage.setItem('psa_f1_rate', f1.value);
+    }
+
+    [d1, f1, purchase, psa10, psa9, raw].forEach(el => {
+      el.addEventListener('input', render);
+    });
+
+    render();
+  </script>
+</body>
+</html>
