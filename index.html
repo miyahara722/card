@@ -276,7 +276,16 @@
       }).join('');
     }
 
-    function render() {
+    // 初回ロード時：F1以外はリセット
+window.addEventListener('load', () => {
+  purchase.value = '';
+  psa10.value = '';
+  psa9.value = '';
+  raw.value = '';
+  d1.value = '';
+});
+
+function render() {
       const purchaseNum = toNumber(purchase.value);
       const psa10Num = toNumber(psa10.value);
       const psa9Num = toNumber(psa9.value);
