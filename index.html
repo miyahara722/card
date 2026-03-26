@@ -277,12 +277,13 @@
     }
 
     // 初回ロード時：F1以外はリセット
+// 初回ロード時：F1以外は0にリセット
 window.addEventListener('load', () => {
-  purchase.value = '';
-  psa10.value = '';
-  psa9.value = '';
-  raw.value = '';
-  d1.value = '';
+  purchase.value = '0';
+  psa10.value = '0';
+  psa9.value = '0';
+  raw.value = '0';
+  d1.value = '0';
 });
 
 function render() {
